@@ -2,7 +2,6 @@ import boto3
 import json
 import os
 
-# 
 def main():
     secret_name = os.environ["SECRET_NAME"]
     aws_region = os.environ["AWS_REGION"]
@@ -10,7 +9,7 @@ def main():
     export_secret_to_env(unseralizedSecret)
 
 def export_secret_to_env(secret):
-    filepath = os.path.join(os.environ['CF_VOLUME_PATH'], "env_vars_to_export")
+    filepath = os.path.join("/var/circleci/", "env_vars_to_export")
     f = open(filepath, "w+")
     for key,value in secret.items():
         print("Exporting {}".format(key))
