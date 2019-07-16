@@ -25,14 +25,14 @@ def fetch_secret(secret_name, region_name):
         region_name=region_name
     )
 
-    fetch_secret_value_response = client.fetch_secret_value(
+    get_secret_value_response = client.get_secret_value(
         SecretId=secret_name
     )
 
     # Decrypts secret using the associated KMS CMK.
     # Depending on whether the secret is a string or binary, one of these fields will be populated.
-    if 'SecretString' in fetch_secret_value_response:
-        return fetch_secret_value_response['SecretString']
+    if 'SecretString' in get_secret_value_response:
+        return get_secret_value_response['SecretString']
     else:
         raise NotImplementedError("Binary secrets are not supported. Please set a Key Value secret.")
 
