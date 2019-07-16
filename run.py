@@ -15,7 +15,7 @@ def export_secret_to_env(secret, filepath):
         print("Exporting {}".format(key))
         escapedValue = value.translate(str.maketrans({";":  r"\;",
                                           "=":  r"\="}))
-        f.write("{}={}\n".format(key,value))
+        f.write("{}=\"{}\"\n".format(key,value))
     f.close()
 
 def fetch_secret(secret_name, region_name):
