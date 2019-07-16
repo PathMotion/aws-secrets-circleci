@@ -5,11 +5,11 @@ import os
 def main():
     secret_name = os.environ["SECRET_NAME"]
     aws_region = os.environ["AWS_REGION"]
+    output_env_filepath = os.environ["OUPUT_PATH"]
     unseralizedSecret = json.loads(fetch_secret(secret_name, aws_region))
-    export_secret_to_env(unseralizedSecret)
+    export_secret_to_env(unseralizedSecret, output_env_filepath)
 
-def export_secret_to_env(secret):
-    filepath = os.path.join("/var/circleci/", "env_vars_to_export")
+def export_secret_to_env(secret, filepath):
     f = open(filepath, "w+")
     for key,value in secret.items():
         print("Exporting {}".format(key))
