@@ -19,7 +19,16 @@ def main():
     parser.add_argument('--secret', help = 'AWS Secret name', required = True)
     parser.add_argument('--region', help = 'AWS Region', required = True)
     parser.add_argument('--output', help = 'Output file where append the values', required = True)
+    parser.add_argument('--debugcreds',
+                            help = 'WARNING : Security risk. Should the AWS Credentials be displayed. You should revoke them soon after.',
+                            action='store_true')
     args = parser.parse_args()
+
+    if args.debugcreds:
+        print("Creds debugging:")
+        print("KEY ID is {}".format(aws_key_id))
+        print("ACCESS KEY is {}".format(aws_access_key))
+        print("☣️Please revoke those credentials asap ☣️")
 
     secret_name = args.secret
     aws_region = args.region
