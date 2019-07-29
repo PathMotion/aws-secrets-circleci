@@ -50,8 +50,10 @@ def append_secrets_to_env_file(secret, filepath):
     file = open(filepath, writemode)
     for key,value in secret.items():
         print("\t exporting secret {}".format(key))
-        escapedValue = value.translate(str.maketrans({";":  r"\;",
-                                          "=":  r"\="}))
+        escapedValue = value.translate(str.maketrans({
+                                        "\"": "\\\"",
+                                        "\n": ""
+        }))
         file.write("export {}=\"{}\"\n".format(key,escapedValue))
     file.close()
 
