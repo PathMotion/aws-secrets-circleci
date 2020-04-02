@@ -1,9 +1,9 @@
-FROM python:3.6-stretch
+FROM python:3.7-buster
 
-RUN pip install boto3 jq
+COPY requirements.txt /
 
-ADD ./run.py /bin/load-aws-secrets
+RUN pip install -r requirements.txt
 
-RUN chmod +x /bin/load-aws-secrets
+COPY ./run.py /bin/load-aws-secrets
 
 ENTRYPOINT ["/bin/load-aws-secrets"]
