@@ -1,30 +1,32 @@
 #!/usr/bin/env python3
 
-import boto3
 import json
 import os
-import argparse, sys
+import argparse
+import boto3
 
 def main():
     if "KEY_ID" not in os.environ:
         raise ValueError('KEY_ID environment variable must be set for AWS Login')
-    
+
     if "ACCESS_KEY" not in os.environ:
         raise ValueError('ACCESS_KEY environment variable must be set for AWS Login')
 
     aws_key_id = os.environ["KEY_ID"]
     aws_access_key = os.environ["ACCESS_KEY"]
-    
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--secret', help = 'AWS Secret name', required = True)
-    parser.add_argument('--region', help = 'AWS Region', required = True)
+    parser.add_argument('--secret', help='AWS Secret name', required=True)
+    parser.add_argument('--region', help='AWS Region', required=True)
     parser.add_argument('--output', help='Output file where append the values', required=True)
     parser.add_argument('--no-prepend-export',
-                            help='Do not prepend the values with export',
-                            action='store_true')
+                        help='Do not prepend the values with export',
+                        action='store_true')
     parser.add_argument('--debugcreds',
-                            help = 'WARNING : Security risk. Should the AWS Credentials be displayed. You should revoke them soon after.',
-                            action='store_true')
+                        help='''WARNING : Security risk.
+                                Should the AWS Credentials be displayed.
+                                You should revoke them soon after.''',
+                        action='store_true')
     args = parser.parse_args()
 
     if args.debugcreds:
@@ -36,33 +38,33 @@ def main():
     secret_name = args.secret
     aws_region = args.region
     output_file = args.output
-    unseralizedSecret = json.loads(
+    unseralized_secret = json.loads(
         fetch_secret(secret_name, aws_region, aws_key_id, aws_access_key)
     )
-    append_secrets_to_env_file(unseralizedSecret, output_file, not args.no_prepend_export)
+    append_secrets_to_env_file(unseralized_secret, output_file, not args.no_prepend_export)
     print("Done.")
 
-def append_secrets_to_env_file(secret, filepath, prepend_with_export = True):
+def append_secrets_to_env_file(secret, filepath, prepend_with_export=True):
     print("Appending secrets to file {}".format(filepath))
 
-    exportKeyword = "export "
+    export_keyword = "export "
     if not prepend_with_export:
-        exportKeyword = ""
+        export_keyword = ""
         print("Export will not be prepended")
 
     if os.path.exists(filepath):
         writemode = 'a+'
     else:
         writemode = 'w+'
-    
+
     file = open(filepath, writemode)
-    for key,value in secret.items():
+    for key, value in secret.items():
         print("\t exporting secret {}".format(key))
-        escapedValue = value.translate(str.maketrans({
-                                        "\"": "\\\"",
-                                        "\n": ""
+        escaped_value = value.translate(str.maketrans({
+            "\"": "\\\"",
+            "\n": ""
         }))
-        file.write("{}{}=\"{}\"\n".format(exportKeyword, key,escapedValue))
+        file.write("{}{}=\"{}\"\n".format(export_keyword, key, escaped_value))
     file.close()
 
 def fetch_secret(secret_name, region_name, aws_key_id, aws_access_key):
@@ -86,7 +88,7 @@ def fetch_secret(secret_name, region_name, aws_key_id, aws_access_key):
     # Depending on whether the secret is a string or binary, one of these fields will be populated.
     if 'SecretString' in get_secret_value_response:
         return get_secret_value_response['SecretString']
-    else:
-        raise NotImplementedError("Binary secrets are not supported. Please set a Key Value secret.")
+    raise NotImplementedError('''Binary secrets are not supported.
+        Please set a Key Value secret.''')
 
 main()
